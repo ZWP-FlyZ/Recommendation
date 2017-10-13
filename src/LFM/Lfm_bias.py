@@ -5,9 +5,10 @@ Created on Sun Feb 28 10:49:58 2016
 @author: fishsey
 """
 import numpy as np
-import common
+#import common
 from math import sqrt
 
+NoneValue = 111;
 def initBaiasLfm():
     p = np.random.rand(userNum, feature) * (1/sqrt(feature))
     q = np.random.rand(itemNum, feature) * (1/sqrt(feature))
@@ -55,6 +56,20 @@ def learningBiasLfm(n, alpha, lamd):
     return p, q, bu, bi
     
     
+def createArray(fileName,userNum=339, wsNum=5825):
+    trainObj=np.loadtxt(fileName,dtype=float)
+    #print trainObj
+    userId, itemId, rt  = trainObj[:, 0], trainObj[:, 1], trainObj[:, 2]
+    #print userId
+    userId = np.array(userId, dtype=int) 
+    itemId = np.array(itemId, dtype=int) 
+    rt = np.array(rt, dtype=float)
+    arrayObj = np.empty((userNum, wsNum))
+    arrayObj.fill(NoneValue)
+    arrayObj[userId, itemId] = rt 
+    return arrayObj
+    
+    
 if __name__ == '__main__':
     #设置参数
     sparseness = 5
@@ -67,11 +82,11 @@ if __name__ == '__main__':
     alpha = 0.02 #step-length
     lamd = 0.0005 #正则化参数(惩罚因子)
     #测试多个训练集，取平均误差
-    trainFile=r'F:/DataSet/ws/train/sparseness%d/training%d.txt' % (sparseness,1)
-    trainArray=common.createArrayObj(trainFile)
+    trainFile=r'E:/Dataset/ws/train/sparseness%d/training%d.txt' % (sparseness,1)
+    trainArray=createArray(trainFile)
     #print trainArray
-    testFile=r'F:/DataSet/ws/test/sparseness%d/test%d.txt' % (sparseness,1)
-    testArray=common.createArrayObj(testFile)
+    testFile=r'E:/Dataset/ws/test/sparseness%d/test%d.txt' % (sparseness,1)
+    testArray=createArray(testFile)
     #fileNameAllPui = 'euiAnalysis/all-pui-%s-%d.txt' % (sparseness, number)
     p, q, bu, bi = learningBiasLfm(steps, alpha, lamd)
 #==============================================================================
