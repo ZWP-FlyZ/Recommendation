@@ -15,7 +15,7 @@ linux_base_path = r'/home/zwp/Dataset'
 ### 是否为推荐流程
 isRecommend = False;
 
-### 数据集选择
+### 数据集选择,更改数据集路径
 sparseness = 5
 number = 1
 tran_path = r'/ws/train/sparseness%d/training%d.txt'%(sparseness,number);
@@ -25,6 +25,7 @@ test_path =  r'/ws/test/sparseness%d/test%d.txt'%(sparseness,number);
 steps = 20#迭代次数
 K = 10 #邻域项数
 
+version = 1.0
 ### 以上参数必须存在并且实现
 
 
