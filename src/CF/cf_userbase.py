@@ -3,11 +3,20 @@
 Created on 2017年10月13日
 
 @author: zwp12
-
-本文件是一个模板接口文件，修改参数并实现方法后，在cf_main.py文件头部更改实现后接口后的py文件
-
-请勿在本文件中直接修改，如需实现复制以下内容。
 '''
+from numpy import int
+from CGIHTTPServer import test
+
+
+
+# 相似矩阵采用参数p=2的闵可夫斯基距离计算 Wuv= sqrt(sum(abs(ruk-rvk)^p ,k=n),p)
+# 
+    
+
+
+
+
+
 
 ### 不同操作系统路径支持
 windows_base_path = r'E:/Dataset';
@@ -26,32 +35,56 @@ test_path =  r'/ws/test/sparseness%d/test%d.txt'%(sparseness,number);
 steps = 20#迭代次数
 K = 10 #邻域项数
 
-### 接口版本，不需要更改
 version = 1.0
 ### 以上参数必须存在并且实现
 
 
 
-# userNum = 339
-# itemNum = 5825
+userNum = 339
+itemNum = 5825
 # feature = 80 #特征数
 # alpha = 0.02 #step-length
 # lamd = 0.0005 #正则化参数(惩罚因子)
 
+NoneValue = 1111;
+
+import numpy as np
+import math 
 
 def initMatrix(trainFilePath,testFilePath):
     ### 从数据集文件中读取数据
     ### 返回训练集和测试集的原始矩阵
     ### R = M[u][i]->[v] T = M[u][i]->[v]
     ### return R,T
-    pass
+    print trainFilePath,testFilePath
+    tranMat = np.loadtxt(trainFilePath,dtype=float);
+    testMat = np.loadtxt(testFilePath,dtype=float);
+    
+    uId,iId,rt = tranMat[:,0],tranMat[:,1],tranMat[:,2];
+    uId = np.array(uId,dtype=int)
+    iId = np.array(iId,dtype=int)
+    rt  = np.array(rt,dtype=float)
+    tranMat = np.empty((userNum,itemNum));
+    tranMat.fill(NoneValue);
+    print uId,iId,rt
+    tranMat[uId,iId] = rt;
+    
+    uId,iId,rt = testMat[:,0],testMat[:,1],testMat[:,2];
+    uId = np.array(uId,dtype=int);
+    iId = np.array(iId,dtype=int);
+    rt =  np.array(rt);
+    testMat = np.empty((userNum,itemNum));
+    testMat.fill(NoneValue);
+    testMat[uId,iId] = rt;
+        
+    return np.mat(tranMat),np.mat(testMat);
 
 def compleMatrix(R,T):
     ### 使用特殊方法更改矩阵R,T中稀疏部分元素，以适应之后预测计算
     ### 如果不需要更改，直接返回R,T
     ### 返回补全后的矩阵,R,T
     ### return R,T
-    pass;
+    return R,T
 
 def neighbourhood(R,K):
     ### 该步骤中统一处理基于用户或者基于项目协同过滤算法获取邻域元素，
@@ -60,8 +93,40 @@ def neighbourhood(R,K):
     ### 可以选择输出x的相似矩阵，x横向量中所有分量平均值
     ### 领域矩阵S = M[x][K] ， 相似矩阵  W = M[x][x]，平均值数组 MeanX = A[x]
     ### return S,W,MeanX
-    pass
-
+    p = 2.0;
+    uc = R.shape[0];
+    ic= R.shape[1];
+    MeanX = np.zeros(uc,dtype=float)
+    W = np.zeros((uc,uc));
+    W.fill(-1);
+    for i in xrange(uc-1):
+        print i
+        for j in range(i+1,uc):
+            ds=0.0;
+            sumi=0;sumj=0;
+            coti=0;cotj=0;
+            for t in range(ic):
+                flag = 0;
+                if R[i,t] != NoneValue: 
+                    sumi += R[i,t];
+                    coti += 1;
+                    flag |= 1;
+                if R[j,t] != NoneValue:
+                    sumj += R[j,t];
+                    cotj += 1;
+                    flag |= 2;
+                if flag == 3:
+                    ds += abs(R[i,t]-R[j,t])**p;
+            if coti!=0:
+                MeanX[i] = sumi/coti;
+            if cotj!=0:
+                MeanX[j] = sumj/cotj;
+            
+            W[i,j] = W[j,i] = 1.0 - (ds ** (1.0/p) / ic );## 本身的相似度
+            S = np.argsort(-W)[:,0:K];## 0到(k-1)列
+    return S,W,MeanX
+                    
+        
 def predict(u,i,W,MeanX,S):
     ### 通过关系矩阵，平均数组和，邻域矩阵预测出用户u对物品i的评分
     ### return v
@@ -83,5 +148,7 @@ def evalRecommend(recom,W,S,T,MeanX=None):
     ### 输入推荐算法recom,相似度矩阵W，邻域矩阵S，测试矩阵T,MeanX参数不需要实现
     ### return rank
     pass;
+
+
 
 
