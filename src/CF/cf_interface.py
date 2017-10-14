@@ -58,11 +58,12 @@ def neighbourhood(R,K):
     ### 当使用基于用户的cf时，x为用户数量，否则x为物品数量。
     ### 从训练矩阵中计算出关于x的邻域矩阵：与x值最接近的K个其他x值
     ### 可以选择输出x的相似矩阵，x横向量中所有分量平均值
-    ### 领域矩阵S = M[x][K] ， 相似矩阵  W = M[x][x]，平均值数组 MeanX = A[x]
-    ### return S,W,MeanX
+    ### 领域矩阵S = M[x][K] ， 相似矩阵  W = M[x][x]，平均矩阵Mean=[MeanX,MeanY]
+    ### 横向平均值数组 MeanX = A[x]，竖向平均值数组 MeanY = A[y]
+    ### return S,W,Mean
     pass
 
-def predict(u,i,W,MeanX,S):
+def predict(u,i,W,Mean,S):
     ### 通过关系矩阵，平均数组和，邻域矩阵预测出用户u对物品i的评分
     ### return v
     pass;
@@ -72,13 +73,13 @@ def recommend(u,W,S,RT,M):
     ### 返回一个最大长度为M的物品数组
     pass;
 
-def evalPredict(predc,W,S,T,MeanX):
+def evalPredict(predc,W,S,T,Mean):
     ### 评价系统预测的精度，并返回MAE和RMSE
     ### 输入预测算法predc,相似度矩阵W，邻域矩阵S，测试矩阵T，平均数组MeanX
     ### return MAE,RMSE
     pass;
 
-def evalRecommend(recom,W,S,T,MeanX=None):
+def evalRecommend(recom,W,S,T,Mean=None):
     ### 评价推荐的效果，并返回推荐矩阵rank，和其他评价参数
     ### 输入推荐算法recom,相似度矩阵W，邻域矩阵S，测试矩阵T,MeanX参数不需要实现
     ### return rank

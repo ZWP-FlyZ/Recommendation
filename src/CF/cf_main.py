@@ -47,7 +47,7 @@ if __name__ == '__main__':
     tranFileName,textFileName = getDataSetFileName()
     R,T = initMatrix(tranFileName,textFileName)# 返回了训练矩阵，与测试矩阵
     R,T = compleMatrix(R,T)# 补全训练矩阵与测试矩阵
-    S,W,MeanX = neighbourhood(R,K) # 计算邻域矩阵
+    S,W,Mean = neighbourhood(R,K) # 计算邻域矩阵
     for i in range(steps):
-        print 'step:%d result='+evaluatioan(function,W,S,T,MeanX) %(i+1)
+        print 'step:%d result='+evaluatioan(function,W,S,T,Mean) %(i+1)
         

@@ -49,7 +49,7 @@ itemNum = 5825
 NoneValue = 1111;
 
 import numpy as np
-import math 
+
 
 def initMatrix(trainFilePath,testFilePath):
     ### 从数据集文件中读取数据
@@ -91,43 +91,44 @@ def neighbourhood(R,K):
     ### 当使用基于用户的cf时，x为用户数量，否则x为物品数量。
     ### 从训练矩阵中计算出关于x的邻域矩阵：与x值最接近的K个其他x值
     ### 可以选择输出x的相似矩阵，x横向量中所有分量平均值
-    ### 领域矩阵S = M[x][K] ， 相似矩阵  W = M[x][x]，平均值数组 MeanX = A[x]
-    ### return S,W,MeanX
+    ### 领域矩阵S = M[x][K] ， 相似矩阵  W = M[x][x]，平均矩阵Mean=[MeanX,MeanY]
+    ### 横向平均值数组 MeanX = A[x]，竖向平均值数组 MeanY = A[y]
+    ### return S,W,Mean
     p = 2.0;
     uc = R.shape[0];
     ic= R.shape[1];
     MeanX = np.zeros(uc,dtype=float)
+    MeanY = np.zeros(ic,dtype=float)
     W = np.zeros((uc,uc));
     W.fill(-1);
+    cotj = np.zeros(ic);
+    sumj = np.zeros(ic);
+    for i in range(uc):
+        sumi=0;coti=0;
+        for j in range(ic):
+            if R[i,j] == NoneValue:
+                continue;
+            sumi += R[i,j];coti+=1;
+            sumj[j] += R[i,j];cotj[j] += 1;
+        MeanX[i] = sumi*1.0/coti;
+    for i in range(ic):
+        if cotj[i] != 0:
+            MeanY[i]= sumj[i] * 1.0 / cotj[i];
+    Mean = [MeanX,MeanY];
+        
     for i in xrange(uc-1):
         print i
         for j in range(i+1,uc):
             ds=0.0;
-            sumi=0;sumj=0;
-            coti=0;cotj=0;
             for t in range(ic):
-                flag = 0;
-                if R[i,t] != NoneValue: 
-                    sumi += R[i,t];
-                    coti += 1;
-                    flag |= 1;
-                if R[j,t] != NoneValue:
-                    sumj += R[j,t];
-                    cotj += 1;
-                    flag |= 2;
-                if flag == 3:
+                if R[i,t] !=NoneValue and R[j,t] != NoneValue:
                     ds += abs(R[i,t]-R[j,t])**p;
-            if coti!=0:
-                MeanX[i] = sumi/coti;
-            if cotj!=0:
-                MeanX[j] = sumj/cotj;
-            
             W[i,j] = W[j,i] = 1.0 - (ds ** (1.0/p) / ic );## 本身的相似度
             S = np.argsort(-W)[:,0:K];## 0到(k-1)列
-    return S,W,MeanX
+    return S,W,Mean
                     
         
-def predict(u,i,W,MeanX,S):
+def predict(u,i,W,Mean,S):
     ### 通过关系矩阵，平均数组和，邻域矩阵预测出用户u对物品i的评分
     ### return v
     pass;
@@ -137,13 +138,13 @@ def recommend(u,W,S,RT,M):
     ### 返回一个最大长度为M的物品数组
     pass;
 
-def evalPredict(predc,W,S,T,MeanX):
+def evalPredict(predc,W,S,T,Mean):
     ### 评价系统预测的精度，并返回MAE和RMSE
     ### 输入预测算法predc,相似度矩阵W，邻域矩阵S，测试矩阵T，平均数组MeanX
     ### return MAE,RMSE
     pass;
 
-def evalRecommend(recom,W,S,T,MeanX=None):
+def evalRecommend(recom,W,S,T,Mean=None):
     ### 评价推荐的效果，并返回推荐矩阵rank，和其他评价参数
     ### 输入推荐算法recom,相似度矩阵W，邻域矩阵S，测试矩阵T,MeanX参数不需要实现
     ### return rank

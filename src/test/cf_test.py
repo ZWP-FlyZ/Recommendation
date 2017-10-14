@@ -8,7 +8,7 @@ import numpy as np
 import CF.cf_userbase as ub
 if __name__ == '__main__':
     
-    t = np.array([[3,2,1],[3,1,2],[1,2,3]]);
+    t = np.array([[1,1111,1],[1111,1,2],[3,1,1111]]);
     print t
     #  print np.sort(t);
     # ordt = np.argsort(t);
