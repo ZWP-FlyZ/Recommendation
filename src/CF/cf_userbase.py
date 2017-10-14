@@ -124,7 +124,7 @@ def neighbourhood(R,K):
                 if R[i,t] !=NoneValue and R[j,t] != NoneValue:
                     ds += abs(R[i,t]-R[j,t])**p;
             W[i,j] = W[j,i] = 1.0 - (ds ** (1.0/p) / ic );## 本身的相似度
-            S = np.argsort(-W)[:,0:K];## 0到(k-1)列
+            S = np.argsort(-W)[:,0:K];## 排序 并得到 0到(k-1)列
     return S,W,Mean
                     
         
