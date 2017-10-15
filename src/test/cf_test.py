@@ -14,6 +14,12 @@ if __name__ == '__main__':
     # ordt = np.argsort(t);
     
     #print t.shape[0]
+    
+    for u in t:
+        print u
+    
+    
+    
     S,W,MeanX=ub.neighbourhood(t, 3);
     print S
     print W

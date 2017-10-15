@@ -5,8 +5,9 @@ Created on Sun Mar 06 10:17:13 2016
 @author: fishsey
 """  
 #缺省值设定为 111
+### 该文件不可运行！！！！
 
-import analysisEui_With_1   
+#import analysisEui_With_1   
 def calMaeAndRmse():
     global testDict
     MAE = 0.0
@@ -98,7 +99,9 @@ import copy
 import sys
 import copy
 if __name__ == '__main__': 
-    simCalMethod = paper.simMinkowskiDist
+    
+    simCalMethod = None
+    #simCalMethod = paper.simMinkowskiDist
     sparseness = 'sparseness5'
     fileNumbers = 1
     K = 2
