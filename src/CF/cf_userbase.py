@@ -25,8 +25,8 @@ isRecommend = False;
 ### 数据集选择,更改数据集路径
 sparseness = 5
 number = 1
-#tran_path = r'/ws/train/sparseness%d/training%d.txt'%(sparseness,number);
-#test_path =  r'/ws/test/sparseness%d/test%d.txt'%(sparseness,number);
+tran_path = r'/ws/train/sparseness%d/training%d.txt'%(sparseness,number);
+test_path =  r'/ws/test/sparseness%d/test%d.txt'%(sparseness,number);
 
 
 steps = 2#迭代次数
@@ -35,17 +35,17 @@ K = 10 #邻域项数
 version = 1.0
 ### 以上参数必须存在并且实现
 
-# userNum = 339
-# itemNum = 5825
+userNum = 339
+itemNum = 5825
 # feature = 80 #特征数
 # alpha = 0.02 #step-length
 # lamd = 0.0005 #正则化参数(惩罚因子)
 
 
-tran_path = r'/my/train/sparseness%d/training%d.txt'%(sparseness,number);
-test_path =  r'/my/test/sparseness%d/test%d.txt'%(sparseness,number);
-userNum = 4
-itemNum = 4
+# tran_path = r'/my/train/sparseness%d/training%d.txt'%(sparseness,number);
+# test_path =  r'/my/test/sparseness%d/test%d.txt'%(sparseness,number);
+# userNum = 4
+# itemNum = 4
 
 
 

@@ -14,7 +14,7 @@ import cf_userbase as cfi
 ###
 
 import platform
-from CF import cf_interface
+import cf_interface
 
 def getDataSetFileName():
     if 'Windows' in platform.system():
