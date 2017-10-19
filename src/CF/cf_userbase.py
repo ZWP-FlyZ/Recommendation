@@ -131,7 +131,7 @@ def neighbourhood(R,K):
             for t in range(ic):
                 if R[i,t] !=NoneValue and R[j,t] != NoneValue:
                     ds += abs(R[i,t]-R[j,t])**p;
-            W[i,j] = W[j,i] = 1.0 - (ds ** (1.0/p) / ic );## 本身的相似度
+            W[i,j] = W[j,i] =1.0/(ds ** (1.0/p)+1.0);## 本身的相似度
             S = np.argsort(-W)[:,0:K];## 排序 并得到 0到(k-1)列
     return S,W,Mean,None
                     
@@ -145,9 +145,8 @@ def predict(u,i,R,W,Mean,S,Other=None):
     wU = W[u,];
     simSum = 0.0;
     sums = 0.0;
-    pw = 3.0;
+    pw = 1.0;
     for v in simU:
-        #v = simU[k];
         sim = wU[v];
         if  sim <= 0.0:
             break;
