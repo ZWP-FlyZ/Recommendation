@@ -74,7 +74,7 @@ class Layer:
         if self.li is None:
             for n in nl:
                 n.setW(np.random.uniform(-0.2,0.2,size=m));
-            self.li = i;
+        self.li = i;
         for nc in range(len(nl)):
             self.lo[nc] = nl[nc].output(i);
         return self.lo;
@@ -95,6 +95,8 @@ class Layer:
         notY =  Y is None;
         for j in range(n):
             if(notY):
+                ### Gj 可能有bug
+                Gj = np.mat(Gj);
                 g = self.df(lo[j])*(Wij[j,:]*Gj.transpose())[0,0]
             else:
                 g = self.df(lo[j])*(Y[j]-lo[j]);
@@ -107,12 +109,62 @@ class Layer:
             curW[:,j] = tmpW;
         return curW,curG;
 
+### 一个BP神经网络的类
 class BPNNet:
-    def __init__(self):
-        pass;
-    pass;
+    ### layers_cot是一个整数数组，f激活函数，求导函数是df
+    ### layers_cot[0]为输入层神经元个数，layers_cot[1] 为输出层神经元个数
+    ### neuron_cot之后的元素为隐层中单元个数，若为多隐层网络时，隐层排列顺序为输出层->输出层
+    def __init__(self,layers_cot,f,df):
+        len_layer = len(layers_cot);
+        if len_layer<2 or f is None or df is None:
+            exit('BP网络初始化失败');
+        self.layers = [];
+        for i in range(2,len_layer):
+            tmp = 'L_hid_'+str(i);
+            self.layers.append(Layer(layers_cot[i],f,df,name=tmp));
+        self.layers.append(Layer(layers_cot[1],f,df,name='L_out'));
     
-
+    ### 输入向量i
+    def output(self,i):
+        layers = self.layers;
+        out=i;
+        for la in range(0,len(layers)):
+            out=layers[la].output(out);
+        return out;
+    
+    ### 预测输出向量out，真实输出y,更新所有参数
+    def update(self,y,al=0.5):
+        layers = self.layers;
+        len_la = len(layers);
+        layer_out = layers[len_la-1];
+        W,G = layer_out.update(Y=y,alpha=al);
+        for i in range(0,len_la-1)[::-1]:
+            W,G = layers[i].update(Wij=W,Gj=G,alpha=al);
+    
+    def error(self,y,out):
+        tmp = (y - out) ** 2 ;
+        return np.sum(tmp);
+            
+    ### 训练集，迭代次数，学习速率
+    def tran(self,tran_set,iterations=1000, alpha=0.5):
+        for it in range(iterations):
+            lasterr = err = 0.0;
+            for kv in tran_set:
+                #print kv;
+                out = self.output(kv[0]);
+                #print out;
+                err += self.error(kv[1], out);
+                self.update(kv[1], alpha)
+            if lasterr != 0.0 and lasterr <err:
+                print 'end hear !!! it= %d ，error= %-.10f' % (it,err)
+            lasterr = err;
+            if it % 50 == 0:
+                print 'it= %d ，error= %-.10f' % (it,err)
+            #alpha *= 0.9;
+    def test(self,test_set):
+        for kv in test_set:
+            out = self.output(kv[0]);
+            print kv[0],'-->',out;
 ### 激活函数
 def Func(x):
     return math.tanh(x);
@@ -127,16 +179,31 @@ def Func2(x):
 def DeFunc2(x):
     return x*(1- x); 
 
-        
-if __name__ == '__main__':
-    print 'BPNN';
+def bpnn221():
+    data = [
+            [np.array([0,0]),np.array([1])],
+            [np.array([1,0]),np.array([0])],
+            [np.array([0,1]),np.array([0])],
+            [np.array([1,1]),np.array([1])]
+        ];
+    data2 = [
+        [np.array([2,2]),np.array([1])],
+        [np.array([1,2]),np.array([0])],
+        [np.array([0.1,0.121]),np.array([1])],
+        [np.array([0.5,1]),np.array([0])]
+    ];
     
+    bpnn = BPNNet([2,1,2],Func,DeFunc);
+    print bpnn.tran(data,iterations=1200,alpha=0.4);
+    print bpnn.test(data);
+    print bpnn.test(data2);
+
+
+def layertest2():
     L1 = Layer(1,Func2,DeFunc2,name='L1');
-    it = np.zeros(4);
-    it[1] = it[3] = 1;
     y = [1];
     #while
-    t = 200;
+    t = 100;
     for i in range(t):
         lt = 0.9;
         print '[0,0]=',L1.output(np.array([0,0]));
@@ -154,6 +221,41 @@ if __name__ == '__main__':
         print '---------------------------------------'
         #lt *= 0.9;
         
-    print  '[1,1]=',L1.output(np.array([1,0.5]));
-    
+    print  '[0,0]=',L1.output(np.array([0,0]));
+    print  '[1,0]=',L1.output(np.array([1,0]));
+    print  '[0,1]=',L1.output(np.array([0,1]));
+    print  '[1,1]=',L1.output(np.array([1,1]));
+
+
+def layertest():
+    L1 = Layer(1,Func2,DeFunc2,name='L1');
+    y = [1];
+    #while
+    t = 100;
+    for i in range(t):
+        lt = 0.9;
+        print '[0,0]=',L1.output(np.array([0,0]));
+        L1.update(Y=[1],alpha=lt);
         
+        print '[1,0]=',L1.output(np.array([1,0]));
+        L1.update(Y=[1],alpha=lt);
+
+        print '[0,1]=',L1.output(np.array([0,1]));
+        L1.update(Y=[1],alpha=lt);
+        
+        print '[1,1]=',L1.output(np.array([1,1]));
+        L1.update(Y=[0],alpha=lt);
+        
+        print '---------------------------------------'
+        #lt *= 0.9;
+        
+    print  '[0,0]=',L1.output(np.array([0,0]));
+    print  '[1,0]=',L1.output(np.array([1,0]));
+    print  '[0,1]=',L1.output(np.array([0,1]));
+    print  '[1,1]=',L1.output(np.array([1,1]));
+        
+if __name__ == '__main__':
+    print 'BPNN';
+    
+    ##layertest();
+    bpnn221();    

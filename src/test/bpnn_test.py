@@ -150,12 +150,12 @@ def demo():
     pat = [
         [[0,0], [1]],
         [[0,1], [0]],
-        [[1,0], [1]],
+        [[1,0], [0]],
         [[1,1], [1]]
     ]
 
     # create a network with two input, two hidden, and one output nodes
-    n = BPNNet(2, 1, 1)
+    n = BPNNet(2, 3, 1)
     # train it with some patterns
     n.train(pat)
     # test it
