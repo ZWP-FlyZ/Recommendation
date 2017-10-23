@@ -120,7 +120,7 @@ class BPNNet:
             exit('BP网络初始化失败');
         self.layers = [];
         for i in range(2,len_layer):
-            tmp = 'L_hid_'+str(i);
+            tmp = 'L_hid_'+str(i-2);
             self.layers.append(Layer(layers_cot[i],f,df,name=tmp));
         self.layers.append(Layer(layers_cot[1],f,df,name='L_out'));
     
@@ -147,19 +147,21 @@ class BPNNet:
             
     ### 训练集，迭代次数，学习速率
     def tran(self,tran_set,iterations=1000, alpha=0.5):
+        #lasterr = 0.0;
         for it in range(iterations):
-            lasterr = err = 0.0;
+            err = 0.0;
             for kv in tran_set:
-                #print kv;
                 out = self.output(kv[0]);
-                #print out;
                 err += self.error(kv[1], out);
-                self.update(kv[1], alpha)
-            if lasterr != 0.0 and lasterr <err:
-                print 'end hear !!! it= %d ，error= %-.10f' % (it,err)
-            lasterr = err;
-            if it % 50 == 0:
-                print 'it= %d ，error= %-.10f' % (it,err)
+                self.update(kv[1], alpha);
+            #print lasterr;
+#             if lasterr != 0.0 and lasterr <err:
+#                 print 'end hear !!! it= %d ，error= %-.10f' % (it,err);
+#                 return ;
+#             lasterr = err;
+            print 'it= %d ，error= %-.10f' % (it,err)
+#             if it % 50 == 0:
+#                 print 'it= %d ，error= %-.10f' % (it,err)
             #alpha *= 0.9;
     def test(self,test_set):
         for kv in test_set:
@@ -179,6 +181,28 @@ def Func2(x):
 def DeFunc2(x):
     return x*(1- x); 
 
+def qostest():
+    tranPath = r'E:/Dataset/ws/train/sparseness5/training1.txt';
+    testPath = r'E:/Dataset/ws/test/sparseness5/test1.txt';
+    tranMat = np.loadtxt(tranPath);
+    testMat = np.loadtxt(testPath);
+    
+    tranKey = tranMat[:,0:2];
+    tranVal = tranMat[:,2];
+    tranKey = np.array(tranKey,dtype=int);
+    tranVal = np.array(tranVal,dtype=float);
+    n = np.alen(tranKey);
+    tranVal.reshape((n,1));
+    tranVal= tranVal.reshape((n,1));
+    tranSet = [];
+    for i in range(n):
+        tranSet.append([tranKey[i],tranVal[i]]);
+        
+    bpnn = BPNNet([2,1,3],Func,DeFunc);
+    print bpnn.tran(tranSet,iterations=700,alpha=1);
+    print bpnn.test(tranSet);    
+
+
 def bpnn221():
     data = [
             [np.array([0,0]),np.array([1])],
@@ -194,37 +218,9 @@ def bpnn221():
     ];
     
     bpnn = BPNNet([2,1,2],Func,DeFunc);
-    print bpnn.tran(data,iterations=1200,alpha=0.4);
+    print bpnn.tran(data,iterations=700,alpha=0.2);
     print bpnn.test(data);
     print bpnn.test(data2);
-
-
-def layertest2():
-    L1 = Layer(1,Func2,DeFunc2,name='L1');
-    y = [1];
-    #while
-    t = 100;
-    for i in range(t):
-        lt = 0.9;
-        print '[0,0]=',L1.output(np.array([0,0]));
-        L1.update(Y=[1],alpha=lt);
-        
-        print '[1,0]=',L1.output(np.array([1,0]));
-        L1.update(Y=[1],alpha=lt);
-
-        print '[0,1]=',L1.output(np.array([0,1]));
-        L1.update(Y=[1],alpha=lt);
-        
-        print '[1,1]=',L1.output(np.array([1,1]));
-        L1.update(Y=[0],alpha=lt);
-        
-        print '---------------------------------------'
-        #lt *= 0.9;
-        
-    print  '[0,0]=',L1.output(np.array([0,0]));
-    print  '[1,0]=',L1.output(np.array([1,0]));
-    print  '[0,1]=',L1.output(np.array([0,1]));
-    print  '[1,1]=',L1.output(np.array([1,1]));
 
 
 def layertest():
@@ -256,6 +252,6 @@ def layertest():
         
 if __name__ == '__main__':
     print 'BPNN';
-    
+    #qostest();
     ##layertest();
-    bpnn221();    
+    #bpnn221();    
