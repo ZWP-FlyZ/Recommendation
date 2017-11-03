@@ -20,7 +20,7 @@ def spilter():
     spas = [5,10,15,20];
     repeat_cot = 10;
     
-    print '初始化数据';
+    print '初始化数据开始';
     now = time.time();
     tranSet = np.loadtxt(input_path, dtype=float);
     attrSet = np.array(tranSet[:,0:3]);
@@ -63,8 +63,7 @@ def spilter():
     
     print '任务完成，总耗时%d秒 '%(time.time() - now)
     
-    
-    pass;
+
 
 
 if __name__ == '__main__':

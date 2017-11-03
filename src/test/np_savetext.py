@@ -10,7 +10,7 @@ import numpy as np
 path = r'E:/Dataset/my/mytest2.txt';
 
 def savetext():
-    mat = np.arange(3000000).reshape((1000000,3));
+    mat = np.arange(9).reshape((3,3));
     #print mat;
     np.savetxt(path, mat,'%.2f');
 

@@ -17,6 +17,10 @@ print i + j * 2;
 j = np.mat(j);
 print (i*j.transpose())[0,0];
 
+i = np.zeros((2,3));
+print i;
+
+
 
 
 
